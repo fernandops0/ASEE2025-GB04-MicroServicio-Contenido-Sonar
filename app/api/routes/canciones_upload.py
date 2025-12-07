@@ -86,11 +86,11 @@ async def _save_maybe_async(func, *args, **kwargs) -> str:
     summary="Subida de canción suelta (RF-3.1)",
 )
 async def upload_cancion(
-    nomCancion: str = Form(...),
+    nom_cancion: str = Form(...),
     precio: float = Form(...),
     genres: Optional[List[str]] = Form(None),      # Varios
     date: Optional[Date] = Form(None),
-    idAlbum: Optional[int] = Form(None),
+    id_album: Optional[int] = Form(None),
 
     artistas_emails: Optional[List[str]] = Form(None),
 
@@ -129,7 +129,7 @@ async def upload_cancion(
             .all()
         )
         map_lower = {g.name.lower(): g for g in existing}
-        missing = sorted(list(unique_lower - set(map_lower.keys())))
+        missing = sorted(unique_lower - set(map_lower.keys()))
         if missing:
             raise HTTPException(400, detail=f"Géneros no válidos: {missing}")
 
@@ -154,14 +154,14 @@ async def upload_cancion(
 
     # 3) Persistencia (el DAO solo escribe en su BD)
     song = song_dao.create(
-        nomCancion=nomCancion,
+        nom_cancion=nom_cancion,
         archivoMp3=audio_path,
         imgPortada=portada_path,
         # genre=genre,
         precio=precio,
         date=date,
         artistas_emails=artistas_emails or [],
-        idAlbum=idAlbum,
+        id_album=id_album,
         genre_names=genre_names,            
 
     )
@@ -178,11 +178,11 @@ async def upload_cancion(
 )
 async def update_cancion(
     song_id: int,
-    nomCancion: Optional[str] = Form(None),
+    nom_cancion: Optional[str] = Form(None),
     generos: Optional[List[str]] = Form(None),
     date: Optional[Date] = Form(None),
     precio: Optional[float] = Form(None),
-    idAlbum: Optional[int] = Form(None),
+    id_album: Optional[int] = Form(None),
     artistas_emails: Optional[List[str]] = Form(None),
 
     # nueva portada opcional
@@ -193,14 +193,14 @@ async def update_cancion(
     song_service = SongService(db)
     update_data: dict[str, Any] = {}
 
-    if nomCancion is not None:
-        update_data["nomCancion"] = nomCancion
+    if nom_cancion is not None:
+        update_data["nom_cancion"] = nom_cancion
     if precio is not None:
         update_data["precio"] = precio
     if date is not None:
         update_data["date"] = date
-    if idAlbum is not None:
-        update_data["idAlbum"] = idAlbum
+    if id_album is not None:
+        update_data["id_album"] = id_album
     if artistas_emails is not None:
         update_data["artistas_emails"] = artistas_emails
     if generos is not None:

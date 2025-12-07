@@ -9,6 +9,8 @@ from app.dao.album_dao import AlbumDAO
 
 router = APIRouter(tags=["canciones"])
 
+SONG_NOT_FOUND = "Canción no encontrada"
+
 @router.get("/canciones", response_model=list[CancionOut])
 def listar_canciones(
     genero: str | None = Query(None),
@@ -24,7 +26,7 @@ def get_song(song_id: int, song_dao: SongDAO = Depends(get_song_dao)):
     song = song_dao.get(song_id)
     if not song:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="Canción no encontrada")
+                            detail=SONG_NOT_FOUND)
     return song
 
 @router.delete("/canciones/{song_id}", status_code=204)
@@ -32,7 +34,7 @@ def borrar_cancion(song_id: int, song_dao: SongDAO = Depends(get_song_dao)):
     """Elimina una canción por su ID."""
     ok = song_dao.delete(song_id)
     if not ok:
-        raise HTTPException(status_code=404, detail="Canción no encontrada")
+        raise HTTPException(status_code=404, detail=SONG_NOT_FOUND)
     return None
 
 @router.get("/artistas/{email_artista}/canciones", response_model=list[CancionOut])
@@ -60,7 +62,7 @@ def registrar_reproduccion(
     if song is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Canción no encontrada",
+            detail=SONG_NOT_FOUND,
         )
     return song
 
